@@ -1,17 +1,38 @@
-## Foundry
+## DeFi Pool Router Contract
 
-**Foundry is a blazing fast, portable and modular toolkit for Ethereum application development written in Rust.**
+**PoolRouter** contract allows users to interact with different DeFi liquidity pools.
 
-Foundry consists of:
+Following protocols are supported:
 
--   **Forge**: Ethereum testing framework (like Truffle, Hardhat and DappTools).
--   **Cast**: Swiss army knife for interacting with EVM smart contracts, sending transactions and getting chain data.
--   **Anvil**: Local Ethereum node, akin to Ganache, Hardhat Network.
--   **Chisel**: Fast, utilitarian, and verbose solidity REPL.
+- **GMX(v1)**: Buy GLP with single asset.
+- **HMX**: Buy HLP.
 
-## Documentation
+## How to add new pools
 
-https://book.getfoundry.sh/
+You can create new `Adapter` contract for a new pool.
+
+In the `interfaces` directory, there's `IAdapter` interface.
+
+You should inherit the `IAdapter` interface and complete all the functions specified within the interface.
+
+You can check how I implemented `GmxAdapter` and `HmxAdapter`.
+
+After creating a new `Adapter` contract, you should register it on the `PoolRouter` contract by calling `addAdapter()` function.
+
+**NOTES**: Adapter contracts are `delegatecall`-ed by our main cointract - `PoolRouter`, and thus you shouldn't define any storage variables. Use constants for protocol specific addresses/values.
+
+## Project structure
+
+```
+├── src
+│   ├── adapters
+│   │   ├── GmxAdapter.sol
+│   │   └── HmxAdapter.sol
+│   └── PoolRouter.sol
+└── test
+    ├── PoolRouter.GMX.t.sol
+    └── PoolRouter.HMX.t.sol
+```
 
 ## Usage
 
@@ -25,42 +46,4 @@ $ forge build
 
 ```shell
 $ forge test
-```
-
-### Format
-
-```shell
-$ forge fmt
-```
-
-### Gas Snapshots
-
-```shell
-$ forge snapshot
-```
-
-### Anvil
-
-```shell
-$ anvil
-```
-
-### Deploy
-
-```shell
-$ forge script script/Counter.s.sol:CounterScript --rpc-url <your_rpc_url> --private-key <your_private_key>
-```
-
-### Cast
-
-```shell
-$ cast <subcommand>
-```
-
-### Help
-
-```shell
-$ forge --help
-$ anvil --help
-$ cast --help
 ```
